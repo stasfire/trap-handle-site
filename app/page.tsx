@@ -257,18 +257,61 @@ export default function Page() {
 
   // Safari/iOS sometimes needs a “nudge” even with muted+playsInline.
   useEffect(() => {
-    const tryPlay = async (el: HTMLVideoElement | null) => {
+    const nudge = (el: HTMLVideoElement | null) => {
       if (!el) return;
-      try {
-        el.muted = true;
-        el.playsInline = true;
-        await el.play();
-      } catch {
-        // ignore; user gesture may be required in some environments
-      }
+
+      // Make autoplay as likely as possible across browsers.
+      el.muted = true;
+      el.defaultMuted = true;
+      el.playsInline = true;
+      el.setAttribute("playsinline", "");
+      el.setAttribute("webkit-playsinline", "");
+
+      // Best effort play (may still require user gesture in some cases)
+      const tryPlay = async () => {
+        try {
+          // Ensure we are at a valid point
+          if (el.readyState >= 2) {
+            await el.play();
+          } else {
+            // wait until data is available
+            const onLoaded = async () => {
+              el.removeEventListener("loadeddata", onLoaded);
+              try {
+                await el.play();
+              } catch {
+                // ignore
+              }
+            };
+            el.addEventListener("loadeddata", onLoaded);
+          }
+        } catch {
+          // ignore
+        }
+      };
+
+      // initial + short delayed retry
+      void tryPlay();
+      const t = window.setTimeout(() => void tryPlay(), 300);
+
+      const onVis = () => {
+        if (!document.hidden) void tryPlay();
+      };
+      document.addEventListener("visibilitychange", onVis);
+
+      return () => {
+        window.clearTimeout(t);
+        document.removeEventListener("visibilitychange", onVis);
+      };
     };
-    tryPlay(globalVidRef.current);
-    tryPlay(designVidRef.current);
+
+    const cleanupGlobal = nudge(globalVidRef.current);
+    const cleanupDesign = nudge(designVidRef.current);
+
+    return () => {
+      cleanupGlobal?.();
+      cleanupDesign?.();
+    };
   }, []);
 
   return (
@@ -283,6 +326,7 @@ export default function Page() {
           muted
           playsInline
           preload="auto"
+          crossOrigin="anonymous"
         >
           <source src={GLOBAL_BG_MP4} type="video/mp4" />
           <source src={GLOBAL_BG_MOV} type="video/quicktime" />
@@ -401,6 +445,7 @@ export default function Page() {
                 muted
                 playsInline
                 preload="auto"
+                crossOrigin="anonymous"
               >
                 <source src={DESIGN_BG_MP4} type="video/mp4" />
                 <source src={DESIGN_BG_MOV} type="video/quicktime" />

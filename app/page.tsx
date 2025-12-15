@@ -90,17 +90,18 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
-const fadeUp: Variants = {
+const fadeUp = {
   hidden: { opacity: 0, y: 18 },
   show: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.6,
+      // Use a cubic-bezier tuple so TS + Framer Motion agree on the type.
       ease: [0.16, 1, 0.3, 1],
     },
   },
-};
+} satisfies Variants;
 
 function Button({
   href,

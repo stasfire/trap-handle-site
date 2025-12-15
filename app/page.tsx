@@ -250,6 +250,7 @@ export default function Page() {
     "relative overflow-hidden rounded-[2.75rem] border border-white/10 bg-black/25 shadow-[0_18px_70px_rgba(0,0,0,0.55)]";
 
   const globalVidRef = useRef<HTMLVideoElement | null>(null);
+  const [heroImgSrc, setHeroImgSrc] = useState("/beachWater.png");
 
   // Safari/iOS sometimes needs a “nudge” even with muted+playsInline.
   useEffect(() => {
@@ -303,7 +304,31 @@ export default function Page() {
 
     const cleanupGlobal = nudge(globalVidRef.current);
 
+    // iOS Safari may block autoplay until a user gesture occurs.
+    // As a fallback, try to start playback on the first tap/click.
+    const onFirstGesture = () => {
+      const el = globalVidRef.current;
+      if (!el) return;
+      try {
+        el.muted = true;
+        el.defaultMuted = true;
+        el.playsInline = true;
+        el.setAttribute("playsinline", "");
+        el.setAttribute("webkit-playsinline", "");
+      } catch {
+        // ignore
+      }
+      void el.play().catch(() => {
+        // ignore
+      });
+    };
+
+    window.addEventListener("touchstart", onFirstGesture, { once: true, passive: true });
+    window.addEventListener("click", onFirstGesture, { once: true });
+
     return () => {
+      window.removeEventListener("touchstart", onFirstGesture as any);
+      window.removeEventListener("click", onFirstGesture as any);
       cleanupGlobal?.();
     };
   }, []);
@@ -320,17 +345,32 @@ export default function Page() {
           muted
           playsInline
           preload="auto"
+          poster="/beachWater.jpg"
           crossOrigin="anonymous"
         >
           <source src={GLOBAL_BG_MP4} type="video/mp4" />
           <source src={GLOBAL_BG_MOV} type="video/quicktime" />
         </video>
+
+        {/* Logo overlay (watermark) - subtle, corner */}
+        <div className="absolute bottom-6 right-6 hidden sm:block">
+          <div className="relative h-40 w-40 md:h-56 md:w-56 opacity-[0.035]">
+            <Image
+              src="/hero-logo.png"
+              alt="Trap Handle watermark"
+              fill
+              sizes="(min-width: 768px) 224px, 160px"
+              className="object-contain [filter:grayscale(1)_contrast(1.1)]"
+            />
+          </div>
+        </div>
+
         <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/45" />
       </div>
 
       {/* Subtle background energy (reduced clutter) */}
       <div className="pointer-events-none fixed inset-0 z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(900px_600px_at_30%_15%,rgba(255,255,255,0.08),transparent_60%),radial-gradient(700px_500px_at_70%_25%,rgba(255,255,255,0.05),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(900px_600px_at_50%_20%,rgba(255,255,255,0.06),transparent_60%)]" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/10 to-black/25" />
       </div>
 
@@ -378,27 +418,28 @@ export default function Page() {
             variants={fadeUp}
             className={[
               "relative overflow-hidden rounded-[2.75rem]",
-              "border border-white/12",
-              "bg-black/45 backdrop-blur-xl",
-              "shadow-[0_22px_90px_rgba(0,0,0,0.70)]",
+              "border border-white/10",
+              "bg-black/30 backdrop-blur-xl",
+              "shadow-[0_22px_85px_rgba(0,0,0,0.60)]",
             ].join(" ")}
           >
             <div className="pointer-events-none absolute inset-0">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="relative h-[360px] w-[360px] sm:h-[440px] sm:w-[440px] md:h-[560px] md:w-[560px] opacity-[0.09]">
-                  <Image
-                    src="/hero-logo.png"
-                    alt="Trap Handle mark"
-                    fill
-                    sizes="(min-width: 768px) 560px, (min-width: 640px) 440px, 360px"
-                    priority
-                    className="object-contain"
-                  />
-                </div>
-              </div>
+              {/* Hero photo (full color, slightly opaque) */}
+              <Image
+                src={heroImgSrc}
+                alt="Kiteboarding background"
+                fill
+                priority
+                sizes="(min-width: 1280px) 1200px, (min-width: 1024px) 900px, 100vw"
+                className="object-cover grayscale opacity-75 contrast-125"
+                onError={() => setHeroImgSrc("/beachWater.jpg")}
+              />
 
-              <div className="absolute inset-0 bg-[radial-gradient(900px_520px_at_30%_30%,rgba(255,255,255,0.08),transparent_60%)]" />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/35" />
+              {/* readability overlays */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/20 to-black/5" />
+              <div className="absolute inset-0 bg-black/15" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/25" />
+              <div className="absolute inset-0 bg-[radial-gradient(900px_520px_at_40%_30%,transparent_45%,rgba(0,0,0,0.40)_100%)]" />
             </div>
 
             <div className="relative p-6 sm:p-8 md:p-10">

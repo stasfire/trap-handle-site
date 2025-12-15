@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useScroll, useTransform, type Variants } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const ETSY_URL =
@@ -20,8 +20,6 @@ const YT_DLAB_WATCH = "https://www.youtube.com/watch?v=Kex3zCCO9tI";
 // Prefer MP4 (best autoplay support). Keep MOV as fallback.
 const GLOBAL_BG_MP4 = "/hero.mp4";
 const GLOBAL_BG_MOV = "/hero.mov";
-const DESIGN_BG_MP4 = "/spinningCustom.mp4";
-const DESIGN_BG_MOV = "/spinningCustom.mov";
 
 type EtsyReview = {
   rating: 1 | 2 | 3 | 4 | 5;
@@ -115,11 +113,11 @@ function Button({
   variant?: "primary" | "ghost";
 }) {
   const base =
-    "inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold tracking-wide transition will-change-transform";
+    "inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold tracking-wide transition will-change-transform";
   const primary =
-    "bg-white text-black hover:-translate-y-0.5 hover:shadow-[0_18px_60px_rgba(255,255,255,0.12)] active:translate-y-0";
+    "bg-white text-black hover:-translate-y-0.5 hover:shadow-[0_14px_50px_rgba(255,255,255,0.10)] active:translate-y-0";
   const ghost =
-    "border border-white/20 text-white hover:border-white/40 hover:bg-white/5";
+    "border border-white/15 text-white/90 hover:text-white hover:border-white/30 hover:bg-white/[0.04]";
   return (
     <a
       href={href}
@@ -245,15 +243,13 @@ function ColorCarousel() {
 }
 
 export default function Page() {
-  const { scrollYProgress } = useScroll();
-  const glowX = useTransform(scrollYProgress, [0, 1], ["-20%", "120%"]);
-
-  // ✅ even tighter
-  const SECTION_Y = "py-2 sm:py-3";
-  const HERO_PY = "pt-3 pb-2 sm:pt-4 sm:pb-3";
+  // More breathing room + less visual density
+  const SECTION_Y = "py-8 sm:py-10";
+  const HERO_PY = "pt-6 pb-6 sm:pt-8 sm:pb-8";
+  const CARD =
+    "relative overflow-hidden rounded-[2.75rem] border border-white/10 bg-black/25 shadow-[0_18px_70px_rgba(0,0,0,0.55)]";
 
   const globalVidRef = useRef<HTMLVideoElement | null>(null);
-  const designVidRef = useRef<HTMLVideoElement | null>(null);
 
   // Safari/iOS sometimes needs a “nudge” even with muted+playsInline.
   useEffect(() => {
@@ -306,11 +302,9 @@ export default function Page() {
     };
 
     const cleanupGlobal = nudge(globalVidRef.current);
-    const cleanupDesign = nudge(designVidRef.current);
 
     return () => {
       cleanupGlobal?.();
-      cleanupDesign?.();
     };
   }, []);
 
@@ -334,40 +328,44 @@ export default function Page() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/45" />
       </div>
 
-      {/* Background energy */}
+      {/* Subtle background energy (reduced clutter) */}
       <div className="pointer-events-none fixed inset-0 z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(1200px_800px_at_20%_10%,rgba(255,255,255,0.10),transparent_60%),radial-gradient(900px_600px_at_80%_20%,rgba(255,255,255,0.06),transparent_55%),radial-gradient(700px_500px_at_50%_90%,rgba(255,255,255,0.05),transparent_60%)]" />
-        <motion.div
-          style={{ left: glowX }}
-          className="absolute top-[-20%] h-[140%] w-[40%] rotate-12 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.09),transparent)] blur-2xl"
-        />
-        <div className="absolute inset-0 opacity-[0.05] [background-image:linear-gradient(rgba(255,255,255,0.09)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.09)_1px,transparent_1px)] [background-size:64px_64px]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/12 via-black/10 to-black/20" />
+        <div className="absolute inset-0 bg-[radial-gradient(900px_600px_at_30%_15%,rgba(255,255,255,0.08),transparent_60%),radial-gradient(700px_500px_at_70%_25%,rgba(255,255,255,0.05),transparent_60%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/10 to-black/25" />
       </div>
 
       {/* Nav */}
       <header className="relative z-30 mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-10 xl:px-14 pt-4">
-        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/30 px-4 py-3 backdrop-blur-xl shadow-[0_18px_70px_rgba(0,0,0,0.45)] sm:px-5">
+        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/20 px-4 py-3 backdrop-blur-xl sm:px-5">
           <div className="flex items-center gap-3">
+            <div className="relative h-9 w-9 overflow-hidden rounded-xl border border-white/10 bg-white/5">
+              <Image
+                src="/icon.png"
+                alt="Trap Handle logo"
+                fill
+                className="object-contain p-1 [filter:grayscale(1)_brightness(0)_invert(1)]"
+                priority
+              />
+            </div>
             <div className="leading-tight">
               <div className="text-sm font-extrabold tracking-wide">TRAP HANDLE</div>
-              <div className="text-xs text-white/60">The handle that will unlock that next trick.</div>
+              <div className="text-[11px] text-white/60">The handle that will unlock that next trick.</div>
             </div>
           </div>
 
-          <div className="hidden items-center gap-4 md:flex">
-            <a href="#design" className="text-sm text-white/70 hover:text-white">
+          <nav className="hidden items-center gap-6 md:flex">
+            <a href="#design" className="text-sm text-white/70 hover:text-white transition">
               Design
             </a>
-            <a href="#featured" className="text-sm text-white/70 hover:text-white">
+            <a href="#featured" className="text-sm text-white/70 hover:text-white transition">
               Featured
             </a>
-            <a href="#reviews" className="text-sm text-white/70 hover:text-white">
+            <a href="#reviews" className="text-sm text-white/70 hover:text-white transition">
               Reviews
             </a>
-          </div>
+          </nav>
 
-          <div className="md:hidden" />
+          <div className="hidden md:block" />
         </div>
       </header>
 
@@ -380,9 +378,9 @@ export default function Page() {
             variants={fadeUp}
             className={[
               "relative overflow-hidden rounded-[2.75rem]",
-              "border border-white/14 ring-1 ring-white/10",
-              "bg-black/55 backdrop-blur-xl",
-              "shadow-[0_35px_140px_rgba(0,0,0,0.75)]", // slightly reduced
+              "border border-white/12",
+              "bg-black/45 backdrop-blur-xl",
+              "shadow-[0_22px_90px_rgba(0,0,0,0.70)]",
             ].join(" ")}
           >
             <div className="pointer-events-none absolute inset-0">
@@ -405,10 +403,6 @@ export default function Page() {
 
             <div className="relative p-6 sm:p-8 md:p-10">
               <div className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/40 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/85 backdrop-blur">
-                  Built for board-offs • Custom engraved • ASA durable
-                </div>
-
                 <h1 className="mt-5 text-4xl font-black tracking-tight text-white sm:text-5xl md:text-6xl">
                   The handle built for{" "}
                   <span className="text-white/65">big-air moments</span>.
@@ -435,30 +429,15 @@ export default function Page() {
           id="design"
           className={`relative mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-10 xl:px-14 ${SECTION_Y}`}
         >
-          <div className="relative overflow-hidden rounded-[2.75rem] border border-white/10 bg-white/5 shadow-[0_28px_110px_rgba(0,0,0,0.65)]">
+          <div className="relative overflow-hidden rounded-[2.75rem] border border-white/10 bg-black/30 shadow-[0_22px_85px_rgba(0,0,0,0.60)]">
             <div className="pointer-events-none absolute inset-0">
-              <video
-                ref={designVidRef}
-                className="h-full w-full object-cover opacity-45 sm:opacity-50"
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="auto"
-                crossOrigin="anonymous"
-              >
-                <source src={DESIGN_BG_MP4} type="video/mp4" />
-                <source src={DESIGN_BG_MOV} type="video/quicktime" />
-              </video>
-
-              <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-black/20" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/10" />
-              <div className="absolute inset-0 bg-[radial-gradient(900px_600px_at_25%_15%,rgba(255,255,255,0.12),transparent_60%)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(900px_600px_at_20%_10%,rgba(255,255,255,0.10),transparent_60%)]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/35" />
             </div>
 
             <div className="relative p-6 sm:p-8 md:p-10">
               <div className="mb-6">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/35 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/85 backdrop-blur">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/25 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/75 backdrop-blur">
                   Design + materials + customization
                 </div>
 
@@ -516,10 +495,10 @@ export default function Page() {
           id="featured"
           className={`relative mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-10 xl:px-14 ${SECTION_Y}`}
         >
-          <div className="relative overflow-hidden rounded-[2.75rem] border border-white/10 bg-white/5 shadow-[0_28px_110px_rgba(0,0,0,0.65)]">
+          <div className="relative overflow-hidden rounded-[2.75rem] border border-white/10 bg-black/30 shadow-[0_22px_85px_rgba(0,0,0,0.60)]">
             <div className="relative p-6 sm:p-8 md:p-10">
               <div className="mb-6">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/35 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/85 backdrop-blur">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/25 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/75 backdrop-blur">
                   Featured
                 </div>
 
@@ -602,10 +581,10 @@ export default function Page() {
           id="reviews"
           className={`relative mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-10 xl:px-14 ${SECTION_Y}`}
         >
-          <div className="relative overflow-hidden rounded-[2.75rem] border border-white/10 bg-white/5 shadow-[0_28px_110px_rgba(0,0,0,0.65)]">
+          <div className="relative overflow-hidden rounded-[2.75rem] border border-white/10 bg-black/30 shadow-[0_22px_85px_rgba(0,0,0,0.60)]">
             <div className="relative p-6 sm:p-8 md:p-10">
               <div className="mb-6">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/35 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/85 backdrop-blur">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/25 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/75 backdrop-blur">
                   Rider feedback
                 </div>
 
@@ -648,7 +627,6 @@ export default function Page() {
           <div className="flex flex-col items-start justify-between gap-6 border-t border-white/10 pt-5 md:flex-row md:items-center">
             <div className="text-xs text-white/55">
               © {new Date().getFullYear()} Trap Handle •{" "}
-              <span className="ml-1">We don’t ride. We fly.</span>
             </div>
           </div>
         </footer>

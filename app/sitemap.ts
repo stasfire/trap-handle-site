@@ -1,12 +1,14 @@
 import { MetadataRoute } from "next";
 
+export const revalidate = 86400; // 1 day
+
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: "https://www.traphandle.com",
+      url: "https://www.traphandle.com/",
       lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 1,
+      changeFrequency: "weekly",
+      priority: 1.0,
     },
   ];
 }

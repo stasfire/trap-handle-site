@@ -90,10 +90,10 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
-// Framer Motion easing (typed as a tuple so TS is happy in strict/Vercel builds)
-const EASE_OUT = [0.16, 1, 0.3, 1] as const;
+// Framer Motion easing (typed as a 4-number tuple; avoids TS issues on Vercel builds)
+const EASE_OUT: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 18 },
   show: {
     opacity: 1,
@@ -103,7 +103,7 @@ const fadeUp = {
       ease: EASE_OUT,
     },
   },
-} satisfies Variants;
+};
 
 function Button({
   href,
@@ -495,7 +495,7 @@ export default function Page() {
                         Reviewed by Mackiteboarding
                       </div>
                       <p className="mt-2 text-sm text-white/70">
-                        Independent breakdown of the handle and how it rides.
+                        Independent breakdown of the handle.
                       </p>
                     </div>
                     <Button href={YT_REVIEW_WATCH} variant="ghost">

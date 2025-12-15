@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const ETSY_URL =
@@ -90,9 +90,16 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  },
 };
 
 function Button({
@@ -239,8 +246,8 @@ export default function Page() {
   const glowX = useTransform(scrollYProgress, [0, 1], ["-20%", "120%"]);
 
   // ✅ even tighter
-  const SECTION_Y = "py-3 sm:py-4";
-  const HERO_PY = "pt-4 pb-3 sm:pt-5 sm:pb-4";
+  const SECTION_Y = "py-2 sm:py-3";
+  const HERO_PY = "pt-3 pb-2 sm:pt-4 sm:pb-3";
 
   const globalVidRef = useRef<HTMLVideoElement | null>(null);
   const designVidRef = useRef<HTMLVideoElement | null>(null);
@@ -292,27 +299,29 @@ export default function Page() {
       </div>
 
       {/* Nav */}
-      <header className="relative z-20 mx-auto flex w-full max-w-7xl items-center justify-between px-5 sm:px-6 lg:px-10 xl:px-14 py-5">
-        <div className="flex items-center gap-3">
-          <div className="leading-tight">
-            <div className="text-sm font-extrabold tracking-wide">TRAP HANDLE</div>
-            <div className="text-xs text-white/60">The handle that will unlock that next trick.</div>
+      <header className="relative z-30 mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-10 xl:px-14 pt-4">
+        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/30 px-4 py-3 backdrop-blur-xl shadow-[0_18px_70px_rgba(0,0,0,0.45)] sm:px-5">
+          <div className="flex items-center gap-3">
+            <div className="leading-tight">
+              <div className="text-sm font-extrabold tracking-wide">TRAP HANDLE</div>
+              <div className="text-xs text-white/60">The handle that will unlock that next trick.</div>
+            </div>
           </div>
-        </div>
 
-        <div className="hidden items-center gap-4 md:flex">
-          <a href="#design" className="text-sm text-white/70 hover:text-white">
-            Design
-          </a>
-          <a href="#featured" className="text-sm text-white/70 hover:text-white">
-            Featured
-          </a>
-          <a href="#reviews" className="text-sm text-white/70 hover:text-white">
-            Reviews
-          </a>
-        </div>
+          <div className="hidden items-center gap-4 md:flex">
+            <a href="#design" className="text-sm text-white/70 hover:text-white">
+              Design
+            </a>
+            <a href="#featured" className="text-sm text-white/70 hover:text-white">
+              Featured
+            </a>
+            <a href="#reviews" className="text-sm text-white/70 hover:text-white">
+              Reviews
+            </a>
+          </div>
 
-        <div className="md:hidden" />
+          <div className="md:hidden" />
+        </div>
       </header>
 
       <main className="relative z-20">
@@ -336,6 +345,7 @@ export default function Page() {
                     src="/hero-logo.png"
                     alt="Trap Handle mark"
                     fill
+                    sizes="(min-width: 768px) 560px, (min-width: 640px) 440px, 360px"
                     priority
                     className="object-contain"
                   />
@@ -445,7 +455,7 @@ export default function Page() {
               </div>
 
               {/* ✅ tighter overall, but still a clean separation */}
-              <div className="mt-10 space-y-4">
+              <div className="mt-12 space-y-4">
                 <div className="text-sm font-extrabold text-white/90">Colors</div>
                 <ColorCarousel />
               </div>

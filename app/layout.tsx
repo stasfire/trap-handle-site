@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -100,11 +101,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <script
+      <head>
+        <Script
+          id="ld-product"
           type="application/ld+json"
+          strategy="beforeInteractive"
           // JSON-LD for Product; does not affect visuals
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -123,11 +124,14 @@ export default function RootLayout({
                 "@type": "Offer",
                 url: "https://www.traphandle.com",
                 priceCurrency: "USD",
+                price: "50",
                 availability: "https://schema.org/InStock",
               },
             }),
           }}
         />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>

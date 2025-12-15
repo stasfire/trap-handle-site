@@ -90,18 +90,19 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
-const fadeUp = {
+const EASE_OUT: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 18 },
   show: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.6,
-      // Use a cubic-bezier tuple so TS + Framer Motion agree on the type.
-      ease: [0.16, 1, 0.3, 1],
+      ease: EASE_OUT,
     },
   },
-} satisfies Variants;
+};
 
 function Button({
   href,
@@ -184,7 +185,7 @@ function ColorCarousel() {
           key={current}
           initial={{ opacity: 0, scale: 0.985 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.35, ease: "easeOut" }}
+          transition={{ duration: 0.35, ease: EASE_OUT }}
           className="absolute inset-0"
         >
           <Image

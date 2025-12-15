@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useScroll, useTransform, type Variants } from "framer-motion";
+import { motion, useScroll, useTransform, type Easing, type Variants } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const ETSY_URL =
@@ -90,7 +90,7 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
-const EASE_OUT: [number, number, number, number] = [0.16, 1, 0.3, 1];
+const EASE_OUT: Easing = [0.16, 1, 0.3, 1];
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 18 },

@@ -5,7 +5,7 @@ import { motion, type Variants } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const ETSY_URL =
-  "https://www.etsy.com/listing/1593207612/tall-kiteboard-handle-custom-engraving";
+  "https://traphandle.etsy.com/listing/1593207612/tall-kiteboard-handle-custom-engraving";
 const IG_URL = "https://www.instagram.com/trap.handle/";
 
 // Embeds
